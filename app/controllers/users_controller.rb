@@ -3,7 +3,7 @@ class UsersController < ApplicationController
 
   def index
     authorize! :index, @user, :message => 'Not authorized as an administrator.'
-    @users = User.all
+    @users = User.all :conditions => (current_user ? ["id != ?", current_user.id] : [])
   end
 
   def show
@@ -18,6 +18,20 @@ class UsersController < ApplicationController
     else
       redirect_to users_path, :alert => "Unable to update user."
     end
+  end
+    
+  def activate
+      user = User.find(params[:id])
+      if user.active == false
+          user.update_attribute :active,  true
+      end
+  end
+        
+  def deactivate
+      user = User.find(params[:id])
+      if user.active == true
+          user.update_attribute :active,  false
+      end
   end
     
   def destroy
