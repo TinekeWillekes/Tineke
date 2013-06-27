@@ -1,13 +1,15 @@
 class UsersController < ApplicationController
   before_filter :authenticate_user!
-
+  helper_method :sort_column, :sort_direction
+	
   def index
     authorize! :index, @user, :message => 'Not authorized as an administrator.'
-		@users = User.all :conditions => (current_user ? ["id != ?", current_user.id] : [])
+		@users = User.order(sort_column + " " + sort_direction)
+			           .search_users(params[:search], params[:page])
+								 .where(['id != ?', current_user.id])
 		if @users.blank? 
-			flash[:alert] = "There are no users."
+			flash.now[:alert] = "There are no users found."
 		end
-		
 	end
 
   def show
@@ -45,5 +47,14 @@ class UsersController < ApplicationController
     else
       redirect_to users_path, :notice => "Can't delete yourself."
     end
+  end
+	
+	private
+  def sort_column
+    User.column_names.include?(params[:sort]) ? params[:sort] : "id"
+  end
+  
+  def sort_direction
+    %w[asc desc].include?(params[:direction]) ? params[:direction] : "asc"
   end
 end
