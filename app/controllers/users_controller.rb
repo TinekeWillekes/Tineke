@@ -3,8 +3,12 @@ class UsersController < ApplicationController
 
   def index
     authorize! :index, @user, :message => 'Not authorized as an administrator.'
-    @users = User.all :conditions => (current_user ? ["id != ?", current_user.id] : [])
-  end
+		@users = User.all :conditions => (current_user ? ["id != ?", current_user.id] : [])
+		if @users.blank? 
+			flash[:alert] = "There are no users."
+		end
+		
+	end
 
   def show
     @user = User.find(params[:id])
@@ -21,18 +25,16 @@ class UsersController < ApplicationController
   end
     
   def activate
-      user = User.find(params[:id])
-      if user.active == false
-          user.update_attribute :active,  true
-      end
-  end
-        
-  def deactivate
-      user = User.find(params[:id])
-      if user.active == true
-          user.update_attribute :active,  false
-      end
-  end
+		@user = User.find(params[:id]);
+		@user.update_attributes({:active => true})
+		redirect_to(:back)
+	end
+	
+	def deactivate
+		@user = User.find(params[:id]);
+		@user.update_attributes({:active => false})
+		redirect_to(:back)
+	end
     
   def destroy
     authorize! :destroy, @user, :message => 'Not authorized as an administrator.'

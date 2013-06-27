@@ -7,7 +7,9 @@ Tineke::Application.routes.draw do
         end
     devise_for :users
   resources :users
+  
+  match 'users/activate/:id', :to => 'users#activate', :as => :user
+  match 'users/deactivate/:id', :to => 'users#deactivate', :as => :user
     
-    get "users/:id/activate"
-    get "users/:id/inactivate"
+  match ':controller(/:action(/:id))(.:format)'
 end

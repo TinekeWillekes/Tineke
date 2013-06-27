@@ -8,8 +8,8 @@
       <th>Email</th>
       <th>Registered</th>
       <th>Role</th>
-      <th>Active</th>
-      <th>Edit role</th>
+      <th>Status</th>
+      <th>Change role</th>
       <th>Delete user</th>
     </tr>
   </thead>
@@ -21,12 +21,13 @@
       <td><%= user.email %></td>
       <td><%= user.created_at.to_date %></td>
       <td><%= user.roles.first.name.titleize unless user.roles.first.nil? %></td>
-      <td><%if user.active == FALSE %><button class="btn btn-danger">activate</button><%else%><button class="btn btn-success">inactivate</button><%end%></td>
-      <td>
-        <a data-toggle="modal" href="#role-options-<%= user.id %>" class="btn btn-mini" type="button">Change role</a>
+      <td><a href="/users/<%if(user.active == true)%>deactivate<%else%>activate<%end%>/<%= user.id %>" 
+			 class="<%if(user.active == true)%>btn btn-mini btn-success<%else%>btn btn-mini btn-danger<%end%>" 
+			 type="button"><%if(user.active == true)%>active<%else%>inactive<%end%></a></td>
+	  <td><a data-toggle="modal" href="#role-options-<%= user.id %>" class="btn btn-mini btn-primary" type="button">Change role</a>
         <%= render user %>
       </td>
-      <td><%= link_to("Delete user", user_path(user), :data => { :confirm => "Are you sure?" }, :method => :delete, :class => 'btn btn-mini') unless user == current_user %></td>
+      <td><%= link_to("Delete user", user_path(user), :data => { :confirm => "Are you sure?" }, :method => :delete, :class => 'btn btn-mini btn-danger') unless user == current_user %></td>
     </tr>
   <% end %>
   </tbody>
